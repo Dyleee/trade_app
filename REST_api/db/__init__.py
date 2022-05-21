@@ -7,6 +7,11 @@ WITHDRAWALS = "withdrawals"
 
 
 class DBClient:
+
+    """
+    Initiates the DB and holds DB-related methods
+    """
+
     def __init__(self):
         client = MongoClient ()
         self.db = client.database
