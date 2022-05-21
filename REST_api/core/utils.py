@@ -3,6 +3,10 @@ import os
 
 class Utils:
 
+    """
+    Holds utility methods like handling the SSO flow
+    """
+    
     def __init__(self, app):
         self.app = app
     

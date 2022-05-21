@@ -1,8 +1,10 @@
 from flask import Flask, request
 
-from back.core.utils import Utils
-from .db import DBClient
+from REST_api.core.utils import Utils
+from REST_api.db import DBClient
+
 from flask_classful import FlaskView, route
+
 
 app = Flask(__name__)
 
@@ -28,8 +30,15 @@ class MainView(FlaskView):
     def login(self):
         return 200, self.app.utils.login(request.form)
     
-    @route("/user", methods=["POST"])
-    def user(self):
+    @route("/user/<username>", methods=["GET"])
+    def user(self, username):
+        # user_info = self.app.db.
+        transactions = self.app.db.fetch_txns_information(username)
         return
 
 app.run()
+
+""" TODO: Implement Handshake Protocols
+User info fetching
+
+"""
