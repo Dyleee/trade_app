@@ -20,7 +20,8 @@ Get User Data and Transaction information `under development`
 |          Name | Required |  Type   | Description                                                                                                                                                           |
 | -------------:|:--------:|:-------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 |     `username` | required | string  | <br/>The username for which to fetch information. <br/><br/>
-|
+
+---
 
 **Response**
 
@@ -48,7 +49,8 @@ Creates a New User Entry.
 |     `username` | required | string  |Username being created (4-10 chars).<br/>|
 |        `name` | required | string  |  Users' full name. <br/> |
 | `email` | required | email | User Email. 
-|       `password` | required | string  | 
+|       `password` | required | string
+---
 **Response**
 
 ```
@@ -74,7 +76,7 @@ Initiates Handshake flow for login.
 |     `username` | required | string  |  <br/><br/>|
 |       `password` | required | string  | 
 
-
+---
 **Response**
 
 ```
