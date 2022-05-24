@@ -22,6 +22,7 @@ class DBClient:
     def create_user(self, form: dict):
         """
         Creates a User entry in the users Database.
+        
         """
 
         # Check if user already exists:

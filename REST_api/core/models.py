@@ -1,5 +1,5 @@
 import datetime
-import mongoengine as mg
+from flask_mongoengine import mongoengine as mg
 
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token

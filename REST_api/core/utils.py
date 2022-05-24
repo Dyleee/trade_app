@@ -1,6 +1,5 @@
 from datetime import datetime
 from REST_api.core.errors import Responses
-
 from REST_api.core.models import User
 
 
