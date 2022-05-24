@@ -1,6 +1,9 @@
 from pymongo import MongoClient
 import hashlib
 import os
+from REST_api.core.errors import Responses
+
+from REST_api.core.models import User
 
 DEPOSITS = "deposit"
 WITHDRAWALS = "withdrawals"
@@ -13,34 +16,24 @@ class DBClient:
     """
 
     def __init__(self):
-        client = MongoClient ()
+        client = MongoClient()
         self.db = client.database
 
-    # TODO : Unit Testing
-
-    def create_user(self, form):
+    def create_user(self, form: dict):
         """
         Creates a User entry in the users Database.
         """
-        username, name, email, password = (
-            form.get("username"),
-            form.get("name"),
-            form.get("email"),
-            form.get("password"),
+
+        # Check if user already exists:
+        exists = User.objects.get(username = form['username'])
+        if exists:
+            return Responses.CONFLICT
+
+        new_user = User(
+            **form
         )
-        salt = os.urandom(32)
-
-        key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 100000)
-        entry = {
-            "username": username,
-            "name": name,
-            "email": email,
-            "key": key,
-            "salt": salt,
-            "invite_code": f"{salt[5]}{username[:2]}{salt[3]}" 
-        }
-
-        self.db.users.insert_one(entry)
+        new_user.save()
+        return Responses.SUCCESS
 
     def fetch_txns_information(self, username):
         """

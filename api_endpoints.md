@@ -81,14 +81,14 @@ Initiates Handshake flow for login.
 
 ```
 {
-    "success": true
+    "status": 200
     "access_token": OAUTH_token
 }
 
 or any implemented error
 {
-    "code": 1000,
-    "error": "An error message"
+    "status": 401,
+    "message": "Non-existent or invalid credentials."
 }
 ```
 ___
