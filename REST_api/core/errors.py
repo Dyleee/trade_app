@@ -1,7 +1,4 @@
 import http.client as hc
-from sre_constants import SUCCESS
-from xml.dom import INVALID_ACCESS_ERR
-
 
 class Responses:
     UNAUTHORIZED = hc.UNAUTHORIZED, "Unauthorized Request."
