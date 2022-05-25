@@ -1,11 +1,14 @@
+import ujson
 from pymongo import MongoClient
-import hashlib
-import os
+from bson import json_util
+
 from REST_api.core.errors import Responses
 
 from REST_api.core.models import User
+import os
+import uuid
 
-DEPOSITS = "deposit"
+DEPOSITS = "deposits"
 WITHDRAWALS = "withdrawals"
 
 
@@ -16,23 +19,22 @@ class DBClient:
     """
 
     def __init__(self):
-        client = MongoClient()
-        self.db = client.database
+        client = MongoClient(os.environ.get("MONGO_URI"))
+        self.db = client.test
 
     def create_user(self, form: dict):
         """
         Creates a User entry in the users Database.
-        
+
         """
 
-        # Check if user already exists:
-        exists = User.objects.get(username = form['username'])
+        # Create Unique Invite code and Check if user already exists:
+        invite_code = uuid.uuid4().hex.upper()[0:6]
+        exists = User.objects.filter(username=form["username"])
         if exists:
             return Responses.CONFLICT
 
-        new_user = User(
-            **form
-        )
+        new_user = User(invite_code=invite_code, **form)
         new_user.save()
         return Responses.SUCCESS
 
@@ -45,16 +47,23 @@ class DBClient:
             ]
         """
         pipeline = [
-            {"$match": {"username": username}},
+            {"$match": {"username": "dyleee"}},
             {
                 "$group": {
                     "_id": "$txn_id",
-                    "user": "username",
-                    "type": "type",
+                    "username": {"$first": "$username"},
+                    "txn_type": {"$first": "$txn_type"},
                     "balance": {"$sum": "$amount"},
-                    "datetime": "datetime"
+                    "datetime": {"$first": "$datetime"},
                 }
             },
         ]
+
+        """
+        The datetime Object will follow Python's datetime.datetime.now() object
+        """
         cursor = self.db.transactions.aggregate(pipeline=pipeline)
-        return [entry for entry in cursor]
+        result = [entry for entry in cursor]
+        if not result:
+            return Responses.NOT_FOUND[0], "No Transactions found."
+        return Responses.SUCCESS[0], result

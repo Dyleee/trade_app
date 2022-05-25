@@ -10,7 +10,13 @@
 [/login](#/login/) <br/>
 [/upload](#/upload/) <br/>
 ___
+## Authorization Flow:
 
+```
+Authorization: Bearer JWT_Token
+```
+
+---
 ### <u> GET /user/<:username> </u>
 
 Get User Data and Transaction information `under development`
@@ -27,14 +33,15 @@ Get User Data and Transaction information `under development`
 
 ```
 {
+
    
 }
 
 or any implemented error
 
 {
-    "code": 1000,
-    "error": "An error message"
+    "status": 404,
+    "message": "No Transactions Found."
 }
 ```
 ___
@@ -55,13 +62,14 @@ Creates a New User Entry.
 
 ```
 {
-    "success": true
+    "status": 200,
+    "message": "Success
 }
 
 or any implemented error
 {
-    "code": 1000,
-    "error": "An error message"
+    "status": 409,
+    "message": "Credentials already exist." / "Invalid Credentials Submitted."
 }
 ```
 ___
@@ -82,7 +90,7 @@ Initiates Handshake flow for login.
 ```
 {
     "status": 200
-    "access_token": OAUTH_token
+    "message": JWT_token
 }
 
 or any implemented error

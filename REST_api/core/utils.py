@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from REST_api.core.errors import Responses
 from REST_api.core.models import User
 
@@ -28,13 +28,13 @@ class Utils:
         if not authorized:
             return Responses.INVALID_CREDENTIALS
 
-        expiry = datetime.timedelta(day=5)
+        expiry = datetime.timedelta(days=5)
         access_token = user.generate_access_token(expiry)
 
-        return 200, access_token
+        return Responses.SUCCESS[0], access_token
 
     def sign_up(self, *args, **kwargs) -> None:
         return self.app.db.create_user(*args, **kwargs)
 
-    def login(self, *args, **kwargs) -> bool:
-        self._verify_key(*args, **kwargs)
+    def login(self, *args, **kwargs):
+        return self._verify_key(*args, **kwargs)

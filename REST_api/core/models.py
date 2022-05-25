@@ -1,17 +1,17 @@
 import datetime
-from flask_mongoengine import mongoengine as mg
-
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
+from flask_mongoengine import MongoEngine as mg
 
+mongo_engine = mg()
 
-class User(mg.Document):
+class User(mongo_engine.Document):
 
-    username = mg.StringField(unique=True, min_length=4)
-    name = mg.StringField()
-    email = mg.EmailField()
-    password = mg.StringField(unique=True, min_length=6, regex=None)
-    invite_code = mg.StringField(unique=True)
+    username = mongo_engine.StringField(unique=True, min_length=4)
+    name = mongo_engine.StringField()
+    email = mongo_engine.EmailField()
+    password = mongo_engine.StringField(unique=True, min_length=6, regex=None)
+    invite_code = mongo_engine.StringField(unique=True)
 
     def encrypt_password(self):
         self.password = generate_password_hash(password=self.password).decode("utf-8")
@@ -32,8 +32,8 @@ class User(mg.Document):
         super(User, self).save(*args, **kwargs)
 
 
-class Transactions(mg.Document):
-    txn_id = mg.StringField()
-    username = mg.StringField()
-    type = mg.StringField
-    datetime = mg.DateTimeField(required=True)
+class Transactions(mongo_engine.Document):
+    txn_id = mongo_engine.StringField()
+    username = mongo_engine.StringField()
+    type = mongo_engine.StringField
+    datetime = mongo_engine.DateTimeField(required=True)

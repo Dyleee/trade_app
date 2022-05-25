@@ -1,26 +1,23 @@
-from email import message
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-
-from REST_api.core.utils import Utils
-from REST_api.db import DBClient
-
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 from flask_classful import FlaskView, route
+from REST_api.core.utils import Utils
+from REST_api.db_handler import DBClient
 
+# Load environment variables
+load_dotenv()
 
+# Create App Instance and config DB
 app = Flask(__name__)
+app.config.from_pyfile("settings.py")
 
-
+# Create the Primary API view
 class MainView(FlaskView):
-    route_base = "/"
+    app.db = DBClient()
+    app.utils = Utils(app)
 
-    def __init__(
-        self,
-    ):
-        self.app = app
-        self.app.db = DBClient()
-        self.app.utils = Utils()
-
+    @route("/", methods=["GET"])
     def index(self):
         return 200, "Test"
 
@@ -29,34 +26,31 @@ class MainView(FlaskView):
         """
         Initiate Sign-up, return 201 on success, else possible error message.
         """
-        status, response = self.app.utils.sign_up(request.form)
-        match status:
-            case 201:
-                return jsonify(status=status, message=response)
-            case _:
-                return jsonify(status=status, message=response)
+        status, response = app.utils.sign_up(request.form)
+        return jsonify(status=status, message=response)
 
     @route("/login", methods=["POST"])
     def login(self):
         """
         Initiate Login, return access_token on success, else possible error message.
         """
-        status, response = self.app.utils.login(request.form)
+        status, response = app.utils.login(request.form)
         match status:
             case 200:
                 return jsonify(status=status, access_token=response)
             case _:
                 return jsonify(status=status, message=response)
 
+    @jwt_required()
     @route("/user/<username>", methods=["GET"])
-    @jwt_required
     def user(self, username):
-        # user_info = self.app.db.
-        transactions = self.app.db.fetch_txns_information(username)
-        return
+        status, response = app.db.fetch_txns_information("dylee")
+        return jsonify(status=status, message=response)
 
 
-app.run()
+MainView.register(app, route_base="/")
 
 """ TODO: User info fetching and Transaction Protocols.
+Crypto Instant Payment Flow
+Invite Code Implementation (Team Feature)
 """
