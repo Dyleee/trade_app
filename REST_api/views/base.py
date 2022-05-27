@@ -10,10 +10,10 @@ load_dotenv()
 
 # Create App Instance and config DB
 app = Flask(__name__)
-app.config.from_pyfile("settings.py")
+app.config.from_pyfile("../settings.py")
 
 # Create the Primary API view
-class MainView(FlaskView):
+class BaseView(FlaskView):
     app.db = DBClient()
     app.utils = Utils(app)
 
@@ -46,9 +46,6 @@ class MainView(FlaskView):
     def user(self, username):
         status, response = app.db.fetch_txns_information("dylee")
         return jsonify(status=status, message=response)
-
-
-MainView.register(app, route_base="/")
 
 """ TODO: User info fetching and Transaction Protocols.
 Crypto Instant Payment Flow

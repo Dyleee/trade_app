@@ -2,10 +2,12 @@ import datetime
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from flask_mongoengine import MongoEngine as mg
+from flask_mongoengine import QuerySet
 
 mongo_engine = mg()
 
-class User(mongo_engine.Document):
+
+class Users(mongo_engine.Document):
 
     username = mongo_engine.StringField(unique=True, min_length=4)
     name = mongo_engine.StringField()
@@ -29,11 +31,22 @@ class User(mongo_engine.Document):
     def save(self, *args, **kwargs):
         if self._created:
             self.encrypt_password()
-        super(User, self).save(*args, **kwargs)
+        super(Users, self).save(*args, **kwargs)
+
+
+class TXNsQuerySet(QuerySet):
+    def pending(self, username: str):
+        return self.filter(status="waiting", username=username)
 
 
 class Transactions(mongo_engine.Document):
+    meta = {"queryset_class": TXNsQuerySet}
+
     txn_id = mongo_engine.StringField()
+    payment_id = mongo_engine.StringField()
     username = mongo_engine.StringField()
-    type = mongo_engine.StringField
+    type = mongo_engine.StringField()
     datetime = mongo_engine.DateTimeField(required=True)
+    status = mongo_engine.StringField()
+    amount = mongo_engine.IntField()
+    address = mongo_engine.StringField()

@@ -1,15 +1,10 @@
-import ujson
 from pymongo import MongoClient
-from bson import json_util
 
 from REST_api.core.errors import Responses
 
-from REST_api.core.models import User
+from REST_api.core.models import Users
 import os
 import uuid
-
-DEPOSITS = "deposits"
-WITHDRAWALS = "withdrawals"
 
 
 class DBClient:
@@ -30,11 +25,11 @@ class DBClient:
 
         # Create Unique Invite code and Check if user already exists:
         invite_code = uuid.uuid4().hex.upper()[0:6]
-        exists = User.objects.filter(username=form["username"])
+        exists = Users.objects.filter(username=form["username"])
         if exists:
             return Responses.CONFLICT
 
-        new_user = User(invite_code=invite_code, **form)
+        new_user = Users(invite_code=invite_code, **form)
         new_user.save()
         return Responses.SUCCESS
 
@@ -47,7 +42,7 @@ class DBClient:
             ]
         """
         pipeline = [
-            {"$match": {"username": "dyleee"}},
+            {"$match": {"username": username}},
             {
                 "$group": {
                     "_id": "$txn_id",
