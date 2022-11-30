@@ -1,7 +1,7 @@
-from datetime import datetime
+import datetime
 import uuid
 from REST_api.core.errors import Responses
-from REST_api.core.models import Transactions, Users
+from REST_api.core.models import Pool, Transactions, Users
 import ujson
 import requests
 
@@ -16,7 +16,6 @@ class Utils:
         self.app = app
 
     def _verify_key(self, query: dict) -> None:
-
         """
         This will verify if the credentials exist and is are correct.
         If Credentials are valid then return Authorization Token to the App.
@@ -54,23 +53,46 @@ class TXNUtils:
         }
         self.DEPOSIT = "DEPOSIT"
         self.WITHDRAWAL = "WITHDRAWAL"
-        self.STAKE = "STAKE"
+        self.TRADE = "TRADE"
+        self.UNTRADE = "UNTRADE"
 
-    def create_transaction(self, username: str, amount: int, type: str):
+    def create_transaction(self, username: str, amount: int, type: str, days: int):
         match type.upper():
             case self.DEPOSIT:
                 return self.create_pay_addr(username, amount)
             case self.WITHDRAWAL:
                 return self.create_withdrawal(username, amount)
-            case self.STAKE:
-                return self.stake(username, amount)
+            case self.TRADE:
+                return self.trade(username, amount, days)
             case _:
                 return Responses.NOT_FOUND
 
     def create_withdrawal(self, username: str, amount: int):
         ...
 
-    def stake(self, username: str, amount: int):
+    def trade(self, username: str, amount: int, days: int):
+        # TODO
+        """
+        Creates a Trade Object and registers it in the Pool.
+            :params username
+            :params amount
+        """
+        user_information = self.app.db.fetch_txns_information(username)
+
+        "If the user does not have enough."
+        if user_information['balance'] < amount:
+            return Responses.INVALID_CREDENTIALS
+
+        payload = {
+            "username": username,
+            "amount": amount,
+            "expiry_date": datetime.datetime.utcnow() + datetime.timedelta(days=days)
+        }
+        new_txn = Pool(**payload)
+        new_txn.save()
+        return Responses.CREATED
+    
+    def untrade(self, username: str, amount: int):
         ...
 
     def generate_address(self, pay_address):

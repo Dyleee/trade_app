@@ -1,14 +1,15 @@
 # API endpoints
 
 ## GET
-[/user/<:username>/](#u-userusername-u) <br/>
+[/user/<:username>/](#u-get-userusername-u) <br/>
 [/transactions/?username](#u-get-transactionsusername-u) `WIP` <br/>
 
 ## POST
 [/sign-up](#u-post-sign-up-u) <br/>
 [/login](#u-post-login-u) <br/>
 [/transactions/create](#u-post-transactionscreate-u) <br/>
-[/transactions/stake]() `WIP` <br/>
+[/transactions/trade](#u-post-transactionstrade-u)<br/>
+[/transactions/untrade](#u-post-transactionsuntrade-u)<br/>
 [/upload](#/upload/) `WIP` <br/>
 ___
 ## Authorization Flow:
@@ -140,15 +141,15 @@ or any implemented error
 }
 ```
 ___
-### <u> POST: /transactions/stake </u>
-Adds an amount of money to the staked pool for a specific time period.
+### <u> POST: /transactions/trade </u>
+Trades an amount of money to the trade pool for a specific time period.
 
 **Parameters**
 
 |          Name | Required |  Type   | Description                                                                                                                                                         |
 | -------------:|:--------:|:-------:| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 |     `username` | required | string  |  <br/><br/> |
-|       `amount` | required | integer  |  <br/><br/> |
+|       `amount` | required | int  |  <br/><br/> |
 | `days` | required | int | <br><br>
 
 ---
@@ -158,6 +159,33 @@ Adds an amount of money to the staked pool for a specific time period.
 {
     "status": 201,
     "message": "Staked {amount} for {x} days"
+}
+
+or any implemented error
+{
+    "status": 401,
+    "message": "Non-existent or invalid credentials."
+}
+```
+___
+
+### <u> POST: /transactions/untrade </u>
+Removes an amount of money from the Pool.
+
+**Parameters**
+
+|          Name | Required |  Type   | Description                                                                                                                                                         |
+| -------------:|:--------:|:-------:| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|     `username` | required | string  |  <br/><br/> |
+|       `amount` | required | int  |  <br/>
+
+---
+**Response**
+
+```
+{
+    "status": 201,
+    "message": "Removed {amount}."
 }
 
 or any implemented error
@@ -185,7 +213,11 @@ Get all Transactions associated with a user.
     "status": 200,
     "message": [
         {
-
+            "_id": transaction_id,
+            "username": username,
+            "txn_type": One of ["deposit", "withdrawal", "trade"],
+            "balance": wallet balance,
+            "datetime": datetime,
         }
     ]
 }

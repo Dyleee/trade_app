@@ -1,8 +1,10 @@
+import base64
+from io import BytesIO
 from flask_classful import FlaskView
 from flask import request, jsonify
 from flask_jwt_extended import jwt_required
 from flask_classful import FlaskView, route
-
+from PIL import Image
 from REST_api.core.utils import TXNUtils
 
 
@@ -27,4 +29,11 @@ class TransactionsView(FlaskView):
     @route("/create", methods=["POST"])
     def create(self):
         status, response = self.txn_utils.create_transaction(**request.form)
+        return jsonify(status=status, message=response)
+    
+    @jwt_required()
+    @route("/", methods=["GET"])
+    def user(self):
+        username = request.args.get("username")
+        status, response = app.db.fetch_txns_information(username)
         return jsonify(status=status, message=response)
